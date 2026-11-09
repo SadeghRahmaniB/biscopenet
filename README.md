@@ -15,8 +15,10 @@
 
 </div>
 
-<!-- TODO: teaser figure, e.g. Figure 1 of the paper -->
-<!-- <p align="center"><img src="assets/teaser.png" width="90%"></p> -->
+<p align="center">
+  <img src="assets/biscopenet_vs_baselines.png" width="95%" alt="Baselines vs. BiScopeNet">
+</p>
+<p align="center"><em>Standard Video-LLMs describe the overall action but not each hand's role. BiScopeNet adds FocusAlign and MetaLoss to produce hand-aware, object-grounded captions.</em></p>
 
 ## Overview
 
@@ -27,6 +29,13 @@ Video-language models usually describe the **high-level action** in an egocentri
 - **BiScopeNet**: a backbone-agnostic framework that adds two components to existing Video-LLMs while keeping the vision encoder and LLM frozen:
   - **FocusAlign**: a gated, text-guided attention projector that re-weights video tokens towards action-relevant regions.
   - **MetaLoss**: a cross-entropy loss that masks the `<meta>…</meta>` spans and up-weights object tokens (λ<sub>o</sub> = 3).
+
+## Method
+
+<p align="center">
+  <img src="assets/biscopenet_architecture.png" width="100%" alt="BiScopeNet architecture">
+</p>
+<p align="center"><em>Overview of BiScopeNet. Video tokens from the frozen encoder pass through FocusAlign (Elementary Video Adapter → positional embedding → text-to-video attention → gated residual → re-alignment module) before reaching the frozen LLM. MetaLoss masks the <code>&lt;meta&gt;</code> spans and up-weights object tokens in the training loss.</em></p>
 
 ## Results
 
@@ -47,6 +56,11 @@ See the paper for zero-shot baselines, per-subset results and ablations.
 ## Dataset
 
 BiScopeCap is hosted on Hugging Face: **[SadeghRahmaniB/BiScopeCap](https://huggingface.co/datasets/SadeghRahmaniB/BiScopeCap)**. The dataset card there documents the fields, splits, curation and licence.
+
+<p align="center">
+  <img src="assets/Dataset Pipeline_5.png" width="55%" alt="BiScopeCap curation pipeline">
+</p>
+<p align="center"><em>BiScopeCap curation. Frame-level annotations from HD-EPIC, Ego4D, EPIC-KITCHENS / VISOR and HOI-QA are turned into video-level captions with Gemini. A final step crops the clips and aligns the spatial metadata to the keyframes.</em></p>
 
 ```python
 from datasets import load_dataset
@@ -73,7 +87,7 @@ A person is closing a door. The right hand is holding and manipulating the door 
 This repository contains the code used to **build BiScopeCap**, which include the **FocusAlign** and **MetaLoss** scripts which can be used on any model backbones.
 
 
-### 3. Evaluate predictions (LLM-as-a-judge)
+## Evaluate predictions (LLM-as-a-judge)
 
 Predictions are scored by GPT-5 mini on five criteria: action, left hand, right hand, objects and caption structure. The full judge prompt is in the supplementary material.
 
